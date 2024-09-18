@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Reservation System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", "poppins" "Geneva", Verdana, sans-serif;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #container {
+      background: #4ecbf9;
+      width: 35%;
+      height: 80vh;
+      padding: 20px;
+      overflow: hidden;
+    }
+    #container h1 {
+      text-align: center;
+      padding-top: 18px;
+      margin-bottom: 24px;
+    }
+    #container div {
+      padding-left: 5%;
+    }
+    label {
+      font-size: 18px;
+    }
+    input {
+      font-size: 18px;
+      border-radius: 7px;
+      margin-left: 5px;
+    }
+    button {
+      padding: 5px 5px;
+    }
+    .secondclass {
+      margin-top: 20px;
+    }
+    .thirdclass {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Booking your place for your dinner!</h1>
+    <form id="reservationForm">
+      <div class="firstclass">
+        <label for="name">Name: </label>
+        <input type="text" id="name" placeholder="Prateek Shrestha" size="25" required onkeyup="nameValidation()"><br><br>
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" placeholder="" required onkeyup="phoneValidation()">
+      </div>
+      <div class="secondclass">
+        <h2>Select a time</h2>
+        <input type="radio" id="first" name="seating" value="5" checked>
+        <label for="first">5:00</label><br>
+        <input type="radio" id="second" name="seating" value="6">
+        <label for="second">6:00</label><br>
+        <input type="radio" id="third" name="seating" value="7">
+        <label for="third">7:00</label><br>
+        <input type="radio" id="fourth" name="seating" value="8">
+        <label for="fourth">8:00</label><br>
+      </div>
+      <div class="thirdclass">
+        <h2>What would you like to have with us?</h2>
+        <input type="checkbox" id="starters" name="menu" value="Starters">
+        <label for="starters">Starters</label><br>
+        <input type="checkbox" id="main" name="menu" value="Main Course">
+        <label for="main">Main Course</label><br>
+        <input type="checkbox" id="dessert" name="menu" value="Dessert">
+        <label for="dessert">Dessert</label><br>
+        <input type="checkbox" id="drinks" name="menu" value="Drinks">
+        <label for="drinks">Drinks</label><br>
+      </div>
+      <br>
+      <div>
+        <button type="submit" id="mybtn">Submit</button>
+        <p id="msgbox"></p>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Get the input fields and the Submit button
+    const personName = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const submitButton = document.querySelector('button');
+    const msgBox = document.getElementById('msgbox');
+    const form = document.getElementById('reservationForm');
+    const checkboxes = document.querySelectorAll('input[name="menu"]');
+    const radioButtons = document.querySelectorAll('input[name="seating"]');
+
+    // Set the initial state of the Submit button
+    submitButton.disabled = true;
+
+    // Add event listeners to the input fields
+    personName.addEventListener('blur', nameValidation);
+    phoneInput.addEventListener('blur', phoneValidation);
+
+    function nameValidation() {
+      const nameData = personName.value.trim();
+      if (nameData === '') {
+        msgBox.textContent = 'Error: Name is empty';
+        personName.style.backgroundColor = 'red';
+        submitButton.disabled = true;
+      } else if (!/^[A-Za-z]+\s+[A-Za-z]+/.test(nameData)) {
+        msgBox.textContent = 'Error: First and last names are required';
+        personName.style.backgroundColor = 'red';
+        submitButton.disabled = true;
+      } else {
+        msgBox.textContent = '';
+        personName.style.backgroundColor = 'white';
+        validateForm();
+      }
+    }
+
+    // Function to validate the phone input field
+    function phoneValidation() {
+      const phoneValue = phoneInput.value.trim();
+      if (phoneValue === '') {
+        msgBox.textContent = 'Error: Phone number is empty';
+        phoneInput.style.backgroundColor = 'red';
+        submitButton.disabled = true;
+      } else if (phoneValue.length !== 6) {
+        msgBox.textContent = 'Error: Phone numbers must have exactly 6 characters';
+        phoneInput.style.backgroundColor = 'red';
+        submitButton.disabled = true;
+      } else if (!/^[0-9]/.test(phoneValue)) {
+        msgBox.textContent = 'Error: Phone number must start with a number';
+        phoneInput.style.backgroundColor = 'red';
+        submitButton.disabled = true;
+      } else {
+        msgBox.textContent = '';
+        phoneInput.style.backgroundColor = 'white';
+        validateForm();
+      }
+    }
+
+    // Function to validate the entire form
+    function validateForm() {
+      if (personName.value.trim() !== '' && phoneInput.value.trim() !== '') {
+        submitButton.disabled = false;
+      } else {
+        submitButton.disabled = true;
+      }
+    }
+
+    // Handle form submission
+    form.addEventListener('submit', function (event) {
+      event.preventDefault(); // Prevent actual form submission
+
+      // Get the selected time
+      let selectedTime;
+      radioButtons.forEach((radio) => {
+        if (radio.checked) {
+          selectedTime = radio.value + ":00";
+        }
+      });
+
+      // Get the selected menu items
+      const selectedMenuItems = [];
+      checkboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+          selectedMenuItems.push(checkbox.value);
+        }
+      });
+
+      const selectedItems = selectedMenuItems.length > 0 ? selectedMenuItems.join(", ") : "None";
+
+      // Display the success message with the entered details
+      msgBox.textContent = `Reservation for ${personName.value} (Phone: ${phoneInput.value}) at ${selectedTime}, with items: ${selectedItems}`;
+    });
+  </script>
+</body>
+</html>
